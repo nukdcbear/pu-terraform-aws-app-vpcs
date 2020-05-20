@@ -14,4 +14,3 @@ variable "aws_vpc_us_name" {
   default = "pu-app-us-vpc"
 }
 
-
