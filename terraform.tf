@@ -3,12 +3,7 @@ terraform {
   required_providers {
     aws = "~> 2.62"
   }
-  backend "remote" {
-    organization = "dcbear-tfe-org"
-    workspaces {
-      name = "app-vpc-test"
-    }
-  }
+
   # backend "s3" {
   #   bucket  = "dcb-tfe-bootcamp-tfstate"
   #   key     = "tfstates/pu-app-vpcs"
