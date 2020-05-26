@@ -3,12 +3,12 @@ terraform {
   required_providers {
     aws = "~> 2.62"
   }
-  # backend "s3" {
-  #   bucket  = "dcb-tfe-bootcamp-tfstate"
-  #   key     = "tfstates/pu-app-vpcs"
-  #   region  = "us-east-2"
-  #   encrypt = true
-  # }
+  backend "s3" {
+    bucket  = "dcb-tfe-bootcamp-tfstate"
+    key     = "tfstates/pu-app-vpcs"
+    region  = "us-east-2"
+    encrypt = true
+  }
 }
 
 provider "aws" {
@@ -21,3 +21,6 @@ provider "aws" {
   region  = "eu-central-1"
 }
 
+provider "tls" {
+  version = "~> 2.1"
+}

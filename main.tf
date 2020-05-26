@@ -120,18 +120,46 @@ resource "aws_default_security_group" "eu-central-vpc" {
   }
 }
 
-resource "aws_route" "us-vpc" {
-  provider                  = aws.aws-west
-  count                     = length(module.aws_eu_vpc.public_subnets_cidr_blocks)
-  route_table_id            = module.aws_us_vpc.public_route_table_ids[0]
-  destination_cidr_block    = module.aws_eu_vpc.public_subnets_cidr_blocks[count.index]
+locals {
+  admin_vpc_us_west_1_admin_vpc_routes    = setproduct(module.aws_us_vpc.public_route_table_ids, module.aws_eu_vpc.public_subnets_cidr_blocks)
+  admin_vpc_eu_central_1_admin_vpc_routes = setproduct(module.aws_eu_vpc.public_route_table_ids, module.aws_us_vpc.public_subnets_cidr_blocks)
+  admin_vpc_us_west_1_app_vpc_routes      = setproduct(module.aws_us_vpc.public_route_table_ids, module.aws_eu_vpc.public_subnets_cidr_blocks)
+  admin_vpc_eu_central_1_app_vpc_routes   = setproduct(module.aws_eu_vpc.public_route_table_ids, module.aws_us_vpc.public_subnets_cidr_blocks)
+  app_vpc_us_west_1_app_vpc_routes        = setproduct(module.aws_us_vpc.public_route_table_ids, module.aws_eu_vpc.public_subnets_cidr_blocks)
+  app_vpc_eu_central_1_app_vpc_routes     = setproduct(module.aws_eu_vpc.public_route_table_ids, module.aws_us_vpc.public_subnets_cidr_blocks)
+  app_vpc_us_west_1_admin_vpc_routes      = setproduct(module.aws_us_vpc.public_route_table_ids, module.aws_eu_vpc.public_subnets_cidr_blocks)
+  app_vpc_eu_central_1_admin_vpc_routes   = setproduct(module.aws_eu_vpc.public_route_table_ids, module.aws_us_vpc.public_subnets_cidr_blocks)
+}
+
+resource "aws_route" "admin_vpc_us_west_1_admin_vpc_route" {
+  provider = aws.us-west
+  count    = length(local.admin_vpc_us_west_1_admin_vpc_routes)
+  route_table_id            = local.admin_vpc_us_west_1_admin_vpc_routes[count.index][0]
+  destination_cidr_block    = local.admin_vpc_us_west_1_admin_vpc_routes[count.index][1]
   vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
 }
 
-resource "aws_route" "eu-vpc" {
-  provider                  = aws.aws-eu
-  count                     = length(module.aws_us_vpc.public_subnets_cidr_blocks)
-  route_table_id            = module.aws_eu_vpc.public_route_table_ids[0]
-  destination_cidr_block    = module.aws_us_vpc.public_subnets_cidr_blocks[count.index]
+resource "aws_route" "admin_vpc_eu_central_1_admin_vpc_route" {
+  provider = aws.us-aws_eu_vpc
+  count    = length(local.admin_vpc_eu_central_1_admin_vpc_routes)
+  route_table_id            = local.admin_vpc_eu_central_1_admin_vpc_routes[count.index][0]
+  destination_cidr_block    = local.admin_vpc_eu_central_1_admin_vpc_routes[count.index][1]
   vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
 }
+
+# resource "aws_route" "us-vpc" {
+#   provider                  = aws.aws-west
+#   count                     = length(module.aws_eu_vpc.public_subnets_cidr_blocks)
+#   route_table_id            = module.aws_us_vpc.public_route_table_ids[0]
+#   destination_cidr_block    = module.aws_eu_vpc.public_subnets_cidr_blocks[count.index]
+#   vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
+# }
+
+# resource "aws_route" "eu-vpc" {
+#   provider                  = aws.aws-eu
+#   count                     = length(module.aws_us_vpc.public_subnets_cidr_blocks)
+#   route_table_id            = module.aws_eu_vpc.public_route_table_ids[0]
+#   destination_cidr_block    = module.aws_us_vpc.public_subnets_cidr_blocks[count.index]
+#   vpc_peering_connection_id = aws_vpc_peering_connection.peer.id
+# }
+
