@@ -132,7 +132,7 @@ locals {
 }
 
 resource "aws_route" "admin_vpc_us_west_1_admin_vpc_route" {
-  provider = aws.us-west
+  provider = aws.aws-west
   count    = length(local.admin_vpc_us_west_1_admin_vpc_routes)
   route_table_id            = local.admin_vpc_us_west_1_admin_vpc_routes[count.index][0]
   destination_cidr_block    = local.admin_vpc_us_west_1_admin_vpc_routes[count.index][1]
