@@ -140,7 +140,7 @@ resource "aws_route" "admin_vpc_us_west_1_admin_vpc_route" {
 }
 
 resource "aws_route" "admin_vpc_eu_central_1_admin_vpc_route" {
-  provider = aws.us-aws_eu_vpc
+  provider = aws.aws-eu
   count    = length(local.admin_vpc_eu_central_1_admin_vpc_routes)
   route_table_id            = local.admin_vpc_eu_central_1_admin_vpc_routes[count.index][0]
   destination_cidr_block    = local.admin_vpc_eu_central_1_admin_vpc_routes[count.index][1]
